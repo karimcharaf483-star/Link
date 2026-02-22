@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Atlas | Secure Redirect</title>
+    <style>
+        :root { --primary: #f7931a; --bg: #0a0a0a; --card: #161616; --text: #d1d1d1; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        .container { background: var(--card); width: 90%; max-width: 500px; padding: 25px; border-radius: 15px; border: 1px solid #222; text-align: center; position: relative; }
+        .logo { color: var(--primary); font-size: 1.8rem; font-weight: bold; margin-bottom: 20px; }
+        .progress-container { width: 100%; background: #222; height: 8px; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 1s linear; }
+        .ad-box { background: #1f1f1f; padding: 20px; margin: 15px 0; border-radius: 8px; color: #555; font-size: 0.8rem; border: 1px dashed #333; }
+        .desc { font-size: 0.95rem; line-height: 1.6; color: #999; margin: 15px 0; }
+        .btn { background: #333; color: #666; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: not-allowed; transition: 0.3s; text-transform: uppercase; }
+        .btn.active { background: var(--primary); color: #000; cursor: pointer; box-shadow: 0 0 15px rgba(247,147,26,0.3); }
+        .gen-box { margin-top: 30px; border-top: 1px solid #222; padding-top: 20px; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box; margin-bottom: 10px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">CRYPTO <span style="color:#fff">ATLAS</span></div>
+
+    <div id="main-ui" class="hidden">
+        <div class="progress-container"><div id="progress-bar"></div></div>
+        <h3 id="title">Loading...</h3>
+        <p class="desc" id="p1"></p>
+        <div class="ad-box">ADVERTISEMENT #1</div>
+        <p class="desc" id="p2"></p>
+        <div class="ad-box">ADVERTISEMENT #2</div>
+        <button id="next-btn" class="btn" disabled>Please Wait 40s</button>
+    </div>
+
+    <div id="admin-ui" class="gen-box">
+        <h3>Link Protector</h3>
+        <input type="text" id="target-url" placeholder="Enter your link here...">
+        <button onclick="generate()" style="background:var(--primary); padding:10px; width:100%; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">GENERATE</button>
+        <p id="output" style="color: #00ff00; font-size: 0.8rem; margin-top: 15px; word-break: break-all;"></p>
+    </div>
+</div>
+
+<script>
+    const steps = [
+        { t: "Step 1: Analyzing Assets", d1: "Bitcoin is decentralized and secure.", d2: "Market volatility creates opportunities." },
+        { t: "Step 2: Blockchain Sync", d1: "Mining secures the global network.", d2: "Each block is a piece of history." },
+        { t: "Step 3: Security Check", d1: "Cold wallets are the safest option.", d2: "Always verify your private keys." },
+        { t: "Step 4: Final Link", d1: "Your link is ready for access.", d2: "Thank you for using Crypto Atlas." }
+    ];
+
+    let current = 0;
+    let finalLink = "";
+
+    window.onload = () => {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('url');
+        if (code) {
+            document.getElementById('admin-ui').style.display = 'none';
+            document.getElementById('main-ui').classList.remove('hidden');
+            finalLink = atob(code);
+            runStep();
+        }
+    };
+
+    function runStep() {
+        const data = steps[current];
+        document.getElementById('title').innerText = data.t;
+        document.getElementById('p1').innerText = data.p1;
+        document.getElementById('p2').innerText = data.p2;
+
+        let time = 40;
+        const btn = document.getElementById('next-btn');
+        const bar = document.getElementById('progress-bar');
+        
+        btn.disabled = true;
+        btn.classList.remove('active');
+        bar.style.width = '0%';
+
+        const timer = setInterval(() => {
+            time--;
+            btn.innerText = `Wait ${time}s`;
+            bar.style.width = `${((40 - time) / 40) * 100}%`;
+
+            if (time <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.classList.add('active');
+                btn.innerText = current === 3 ? "GET LINK" : "CONTINUE";
+            }
+        }, 1000);
+    }
+
+    document.getElementById('next-btn').onclick = () => {
+        if (current < 3) {
+            current++;
+            runStep();
+        } else {
+            window.location.href = finalLink;
+        }
+    };
+
+    function generate() {
+        const input = document.getElementById('target-url').value;
+        if(input) {
+            const encoded = btoa(input);
+            const link = window.location.href.split('?')[0] + "?url=" + encoded;
+            document.getElementById('output').innerText = link;
+        }
+    }
+</script>
+</body>
+</html>
